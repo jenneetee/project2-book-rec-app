@@ -1,0 +1,43 @@
+name: book_recommendation_app
+description: A new Flutter project
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish --dry-run`.
+# See more at https://dart.dev/tools/pub/cmd/pub-publish
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+environment:
+  sdk: "^3.7.0" # Add this section for SDK version constraint
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+
+  # Firebase packages
+  firebase_core: ^3.0.0
+  firebase_auth: 5.5.3
+  cloud_firestore: ^5.0.0
+
+
+  # HTTP for Google Books API
+  http: ^1.2.0
+
+  # OpenAI API
+  dio: ^5.0.0
+
+  # Image picker (for profile picture)
+  image_picker: ^1.0.0
+
+  # State management (optional but recommended)
+  provider: ^6.0.0
+
+  # For nice UI
+  flutter_rating_bar: ^4.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

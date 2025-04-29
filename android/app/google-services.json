@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "979329731515",
+    "project_id": "bookrecapp-6d7ab",
+    "storage_bucket": "bookrecapp-6d7ab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979329731515:android:bebc3fbc9f1100df76d29e",
+        "android_client_info": {
+          "package_name": "com.example.book_recommendation_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDel5gjMvwApb_fmUqFq2DoaYQLbAw7OJc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
