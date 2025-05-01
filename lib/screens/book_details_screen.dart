@@ -49,24 +49,54 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
+    final userId = user.uid;
     final bookId = widget.book['id'];
+    final volumeInfo = widget.book['volumeInfo'];
+    final title = volumeInfo['title'] ?? '';
+    final authors = (volumeInfo['authors'] as List<dynamic>?)?.join(', ') ?? '';
+    final reviewText = _reviewController.text.trim();
 
+    final reviewData = {
+      'rating': _rating,
+      'review': reviewText,
+      'readingStatus': _readingStatus,
+      'timestamp': FieldValue.serverTimestamp(),
+      'userEmail': user.email,
+      'title': title,
+      'authors': authors,
+    };
+
+    // 1. Save to book-centric reviews
     await FirebaseFirestore.instance
         .collection('reviews')
         .doc(bookId)
         .collection('userReviews')
-        .doc(user.uid)
+        .doc(userId)
+        .set(reviewData);
+
+    // 2. Save to user profile under reviews
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('reviews')
+        .doc(bookId)
+        .set(reviewData);
+
+    // 3. Save reading list info under user profile
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('readingList')
+        .doc(bookId)
         .set({
-      'rating': _rating,
-      'review': _reviewController.text.trim(),
-      'readingStatus': _readingStatus,
+      'title': title,
+      'authors': authors,
+      'status': _readingStatus,
       'timestamp': FieldValue.serverTimestamp(),
-      'userEmail': user.email,
-      'title': widget.book['volumeInfo']['title'] ?? '',
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Review saved!')),
+      const SnackBar(content: Text('Review and reading list updated!')),
     );
   }
 
@@ -76,8 +106,6 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     final title = volumeInfo['title'] ?? 'No Title';
     final authors = (volumeInfo['authors'] as List<dynamic>?)?.join(', ') ?? 'Unknown Author';
     final description = volumeInfo['description'] ?? 'No description available.';
-    // Remove the code that retrieves the thumbnail image
-    // final thumbnail = volumeInfo['imageLinks'] != null ? volumeInfo['imageLinks']['thumbnail'] : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -88,12 +116,11 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Use a default book icon instead of trying to load an image
             Center(
               child: const Icon(
                 Icons.book,
-                size: 200, // Adjust size as needed
-                color: Colors.grey, // Adjust color as needed
+                size: 200,
+                color: Colors.grey,
               ),
             ),
             const SizedBox(height: 16),

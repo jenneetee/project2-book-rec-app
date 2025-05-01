@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'profile_screen.dart';
 import 'search_screen.dart';
@@ -14,6 +15,8 @@ class DiscussionScreen extends StatefulWidget {
 class _DiscussionScreenState extends State<DiscussionScreen> {
   int _selectedIndex = 2;
   final TextEditingController _searchController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   List<DocumentSnapshot> _communities = [];
   List<DocumentSnapshot> _filteredCommunities = [];
   bool _isLoading = true;
@@ -62,10 +65,33 @@ class _DiscussionScreenState extends State<DiscussionScreen> {
   }
 
   Future<void> _joinCommunity(String communityId) async {
-    final user = FirebaseFirestore.instance.collection('users').doc('current_user');
-    await user.set({
-      'joinedCommunities': FieldValue.arrayUnion([communityId]),
-    }, SetOptions(merge: true));
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final groupRef = FirebaseFirestore.instance.collection('communities').doc(communityId);
+
+    final communitySnapshot = await groupRef.get();
+    final communityData = communitySnapshot.data();
+
+    if (communityData == null) return;
+
+    final name = communityData['name'] ?? 'Unnamed Community';
+    final description = communityData['description'] ?? '';
+
+    // 1. Add user to community's members array (if not already)
+    await groupRef.update({
+      'members': FieldValue.arrayUnion([user.uid]),
+    });
+
+    // 2. Add group info to the user’s joinedGroups subcollection
+    await userRef
+        .collection('joinedGroups')
+        .doc(communityId)
+        .set({
+          'name': name,
+          'description': description,
+        });
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('You joined the community!')),
