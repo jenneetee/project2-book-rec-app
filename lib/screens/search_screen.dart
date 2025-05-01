@@ -68,12 +68,13 @@ class _SearchScreenState extends State<SearchScreen> {
     final volumeInfo = book['volumeInfo'];
     final title = volumeInfo['title'] ?? 'No Title';
     final authors = (volumeInfo['authors'] as List<dynamic>?)?.join(', ') ?? 'Unknown Author';
-    final thumbnail = volumeInfo['imageLinks'] != null ? volumeInfo['imageLinks']['thumbnail'] : null;
 
     return ListTile(
-      leading: thumbnail != null
-          ? Image.network(thumbnail, width: 50, fit: BoxFit.cover)
-          : Container(width: 50, color: Colors.grey),
+      leading: const Icon(
+        Icons.book,
+        size: 50,
+        color: Colors.grey, // You can customize the color
+      ),
       title: Text(title),
       subtitle: Text(authors),
       trailing: const Icon(Icons.arrow_forward),

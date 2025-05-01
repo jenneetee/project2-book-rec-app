@@ -76,7 +76,8 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     final title = volumeInfo['title'] ?? 'No Title';
     final authors = (volumeInfo['authors'] as List<dynamic>?)?.join(', ') ?? 'Unknown Author';
     final description = volumeInfo['description'] ?? 'No description available.';
-    final thumbnail = volumeInfo['imageLinks'] != null ? volumeInfo['imageLinks']['thumbnail'] : null;
+    // Remove the code that retrieves the thumbnail image
+    // final thumbnail = volumeInfo['imageLinks'] != null ? volumeInfo['imageLinks']['thumbnail'] : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -87,11 +88,14 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            thumbnail != null
-                ? Center(
-                    child: Image.network(thumbnail, height: 200),
-                  )
-                : Container(height: 200, color: Colors.grey),
+            // Use a default book icon instead of trying to load an image
+            Center(
+              child: const Icon(
+                Icons.book,
+                size: 200, // Adjust size as needed
+                color: Colors.grey, // Adjust color as needed
+              ),
+            ),
             const SizedBox(height: 16),
             Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
