@@ -78,7 +78,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                         padding: const EdgeInsets.all(12),
                         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                         decoration: BoxDecoration(
-                          color: isMe ? Color(0xFF7B1FA2) : Color(0xFF2E7D32), // purple or green
+                          color: isMe ? Color(0xFF7B1FA2) : Color(0xFF2E7D32), 
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(16),
                             topRight: const Radius.circular(16),
@@ -143,7 +143,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
           ),
         ],
       ),
-      backgroundColor: const Color(0xFF1E1E1E), // dark background
+      backgroundColor: const Color(0xFF1E1E1E),
     );
   }
 }
