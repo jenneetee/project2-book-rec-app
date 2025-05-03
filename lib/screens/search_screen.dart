@@ -73,7 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
       leading: const Icon(
         Icons.book,
         size: 50,
-        color: Colors.grey, // You can customize the color
+        color: Colors.grey, 
       ),
       title: Text(title),
       subtitle: Text(authors),
