@@ -21,15 +21,12 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final user = FirebaseAuth.instance.currentUser;
 
-  // Send a message
   void _sendMessage() async {
     final user = _auth.currentUser;
     if (user == null || _messageController.text.trim().isEmpty) return;
 
-    // Get user email as the display name
     final displayName = user.email ?? 'Unknown';
 
-    // Save the message to Firestore
     await FirebaseFirestore.instance
         .collection('communities')
         .doc(widget.communityId)
@@ -37,11 +34,10 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
         .add({
       'text': _messageController.text.trim(),
       'senderId': user.uid,
-      'senderName': displayName, // Store email as the display name
+      'senderName': displayName,
       'timestamp': FieldValue.serverTimestamp(),
     });
 
-    // Clear the input after sending the message
     _messageController.clear();
   }
 
@@ -51,7 +47,6 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
       appBar: AppBar(title: Text('Chat - ${widget.communityName}')),
       body: Column(
         children: [
-          // Chat messages list
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
@@ -71,27 +66,46 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                   padding: const EdgeInsets.all(8),
                   children: messages.map((doc) {
                     final data = doc.data() as Map<String, dynamic>;
+                    if (data['text'] == null || data['text'].toString().trim().isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+
                     final isMe = user?.uid == data['senderId'];
 
                     return Align(
                       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                         decoration: BoxDecoration(
-                          color: isMe ? Colors.blue[100] : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(8),
+                          color: isMe ? Color(0xFF7B1FA2) : Color(0xFF2E7D32), // purple or green
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(16),
+                            topRight: const Radius.circular(16),
+                            bottomLeft: Radius.circular(isMe ? 16 : 0),
+                            bottomRight: Radius.circular(isMe ? 0 : 16),
+                          ),
                         ),
                         child: Column(
-                          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                          crossAxisAlignment:
+                              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                           children: [
-                            // Display name of the sender (email)
                             Text(
                               data['senderName'] ?? 'Unknown',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
-                            // Message text
-                            Text(data['text'] ?? ''),
+                            const SizedBox(height: 4),
+                            Text(
+                              data['text'] ?? '',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -101,8 +115,6 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
               },
             ),
           ),
-
-          // Message input area
           Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
@@ -110,11 +122,20 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration: const InputDecoration(hintText: 'Enter message...'),
+                    decoration: const InputDecoration(
+                      hintText: 'Enter message...',
+                      filled: true,
+                      fillColor: Color(0xFF333333),
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
+                    ),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send),
+                  icon: const Icon(Icons.send, color: Colors.purple),
                   onPressed: _sendMessage,
                 ),
               ],
@@ -122,6 +143,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
           ),
         ],
       ),
+      backgroundColor: const Color(0xFF1E1E1E), // dark background
     );
   }
 }

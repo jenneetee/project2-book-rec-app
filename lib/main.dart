@@ -7,7 +7,6 @@ import 'screens/search_screen.dart';
 import 'screens/book_details_screen.dart';
 import 'screens/discussion_screen.dart';
 import 'widgets/bottom_nav_bar.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -15,7 +14,7 @@ void main() async {
       apiKey: "AIzaSyBR13XQ6fnYo74V95usQhwUxwg4HKfvAxQ",
       authDomain: "bookrecapp-6d7ab.firebaseapp.com",
       projectId: "bookrecapp-6d7ab",
-      storageBucket: "bookrecapp-6d7ab.appspot.com", // Fixed typo here
+      storageBucket: "bookrecapp-6d7ab.appspot.com",
       messagingSenderId: "979329731515",
       appId: "1:979329731515:web:5995d4be0159cd8a76d29e",
     ),
@@ -31,9 +30,33 @@ class BookRecommendationApp extends StatelessWidget {
     return MaterialApp(
       title: 'Book Recommendation App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+        primaryColor: const Color(0xFF5D4037), // dark macadamia brown
+        scaffoldBackgroundColor: const Color(0xFF3E2723), // darker background
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF4E342E),
+          foregroundColor: Color(0xFFF5F5DC), // beige text
+          iconTheme: IconThemeData(color: Color(0xFFF5F5DC)),
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color(0xFF4E342E),
+          selectedItemColor: Color(0xFFF5F5DC), // beige
+          unselectedItemColor: Color(0xFFBCAAA4), // light brown
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF6D4C41), // mid brown
+            foregroundColor: const Color(0xFFF5F5DC), // beige text
+          ),
+        ),
+        cardColor: const Color(0xFF4E342E),
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: Color(0xFFF5F5DC)),
+          bodyLarge: TextStyle(color: Color(0xFFF5F5DC)),
+          titleLarge: TextStyle(color: Color(0xFFF5F5DC), fontWeight: FontWeight.bold),
+        ),
       ),
-      home: const LoginScreen(), // Start at login
+      home: const LoginScreen(),
     );
   }
 }

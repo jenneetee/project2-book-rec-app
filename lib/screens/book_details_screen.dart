@@ -45,7 +45,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     }
   }
 
-  Future<void> _saveReview() async {
+  Future<void> _addToReadingList() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -54,35 +54,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     final volumeInfo = widget.book['volumeInfo'];
     final title = volumeInfo['title'] ?? '';
     final authors = (volumeInfo['authors'] as List<dynamic>?)?.join(', ') ?? '';
-    final reviewText = _reviewController.text.trim();
 
-    final reviewData = {
-      'rating': _rating,
-      'review': reviewText,
-      'readingStatus': _readingStatus,
-      'timestamp': FieldValue.serverTimestamp(),
-      'userEmail': user.email,
-      'title': title,
-      'authors': authors,
-    };
-
-    // 1. Save to book-centric reviews
-    await FirebaseFirestore.instance
-        .collection('reviews')
-        .doc(bookId)
-        .collection('userReviews')
-        .doc(userId)
-        .set(reviewData);
-
-    // 2. Save to user profile under reviews
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('reviews')
-        .doc(bookId)
-        .set(reviewData);
-
-    // 3. Save reading list info under user profile
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
@@ -96,7 +68,46 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Review and reading list updated!')),
+      const SnackBar(content: Text('Book added to reading list!')),
+    );
+  }
+
+  Future<void> _saveReviewAndRating() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final userId = user.uid;
+    final bookId = widget.book['id'];
+    final volumeInfo = widget.book['volumeInfo'];
+    final title = volumeInfo['title'] ?? '';
+    final authors = (volumeInfo['authors'] as List<dynamic>?)?.join(', ') ?? '';
+    final reviewText = _reviewController.text.trim();
+
+    final reviewData = {
+      'rating': _rating,
+      'review': reviewText,
+      'timestamp': FieldValue.serverTimestamp(),
+      'userEmail': user.email,
+      'title': title,
+      'authors': authors,
+    };
+
+    await FirebaseFirestore.instance
+        .collection('reviews')
+        .doc(bookId)
+        .collection('userReviews')
+        .doc(userId)
+        .set(reviewData);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('reviews')
+        .doc(bookId)
+        .set(reviewData);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Rating and review saved!')),
     );
   }
 
@@ -104,7 +115,8 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
   Widget build(BuildContext context) {
     final volumeInfo = widget.book['volumeInfo'];
     final title = volumeInfo['title'] ?? 'No Title';
-    final authors = (volumeInfo['authors'] as List<dynamic>?)?.join(', ') ?? 'Unknown Author';
+    final authors =
+        (volumeInfo['authors'] as List<dynamic>?)?.join(', ') ?? 'Unknown Author';
     final description = volumeInfo['description'] ?? 'No description available.';
 
     return Scaffold(
@@ -132,7 +144,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
             const SizedBox(height: 24),
             const Text('Rate this book:'),
             RatingBar.builder(
-              initialRating: 0,
+              initialRating: _rating,
               minRating: 1,
               direction: Axis.horizontal,
               allowHalfRating: true,
@@ -161,16 +173,25 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
             TextField(
               controller: _reviewController,
               decoration: const InputDecoration(
-                labelText: 'Write a review',
+                labelText: 'Write a review (optional)',
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
             ),
             const SizedBox(height: 24),
             Center(
-              child: ElevatedButton(
-                onPressed: _saveReview,
-                child: const Text('Submit Review'),
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: _addToReadingList,
+                    child: const Text('Add to Reading List'),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _saveReviewAndRating,
+                    child: const Text('Submit Rating/Review'),
+                  ),
+                ],
               ),
             ),
           ],
