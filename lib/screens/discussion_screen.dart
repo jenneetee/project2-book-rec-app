@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'profile_screen.dart';
 import 'search_screen.dart';
-import 'community_chat_screen.dart'; // <-- Add this import
+import 'community_chat_screen.dart'; 
 
 class DiscussionScreen extends StatefulWidget {
   const DiscussionScreen({Key? key}) : super(key: key);
@@ -80,18 +80,17 @@ class _DiscussionScreenState extends State<DiscussionScreen> {
     final name = communityData['name'] ?? 'Unnamed Community';
     final description = communityData['description'] ?? '';
 
-    // Add user to community's members array
+   
     await groupRef.update({
       'members': FieldValue.arrayUnion([user.uid]),
     });
 
-    // Add group info to the user’s joinedGroups
     await userRef.collection('joinedGroups').doc(communityId).set({
       'name': name,
       'description': description,
     });
 
-    // Navigate to chat screen
+
     Navigator.push(
       context,
       MaterialPageRoute(
