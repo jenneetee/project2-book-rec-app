@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<Map<String, dynamic>> _readingList = [];
   List<Map<String, dynamic>> _groups = [];
   
-// Add this function in _ProfileScreenState:
+
 String generateGravatarUrl(String email) {
   final normalizedEmail = email.trim().toLowerCase();
   final emailBytes = utf8.encode(normalizedEmail);
@@ -176,7 +176,7 @@ setState(() {
     final email = _user!.email!;
     _profileImageUrl = generateGravatarUrl(email);
   }
-  _selectedGenre = genre; // Load saved genre
+  _selectedGenre = genre; 
   _aiSuggestions = _genreSuggestions[_selectedGenre!] ?? [];
 
 });
@@ -329,10 +329,10 @@ TextButton(
         password: currentPassword,
       );
 
-      // Reauthenticate first
+      
       await user.reauthenticateWithCredential(cred);
 
-      // Then update
+
       if (isPassword) {
         await user.updatePassword(newValue);
       } else {
@@ -467,14 +467,14 @@ _reviews.isEmpty
         itemBuilder: (context, index) {
           final review = _reviews[index];
           return ListTile(
-            title: Text(review['title']), // Book title
+            title: Text(review['title']), 
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Rating: ${review['rating']}'),
               
                 const SizedBox(height: 5),
-                Text('Review: ${review['review']}'), // The actual review text
+                Text('Review: ${review['review']}'),
               ],
             ),
           );
